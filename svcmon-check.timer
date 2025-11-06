@@ -1,10 +1,11 @@
 [Unit]
-Description=SafePC Scheduled Monitoring Service Timer
+Description=SvcMon: smon.service Timer
 
 [Timer]
+OnBootSec=5min
 OnCalendar=*-*-* *:00:00
 Persistent=true
-Unit=servicemonitorschedule.service
+Unit=svcmon-check.service
 
 [Install]
 WantedBy=timers.target

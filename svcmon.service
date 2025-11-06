@@ -1,11 +1,11 @@
 [Unit]
-Description=SafePC Monitoring Service
+Description=SvcMon: Service Monitoring Service
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python /root/servicemonitor/server.py
-WorkingDirectory=/root/servicemonitor
+ExecStart=/usr/bin/python /root/svcmon/server.py
+WorkingDirectory=/root/svcmon
 Restart=always
 RestartSec=5
 User=root
