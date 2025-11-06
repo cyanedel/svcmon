@@ -10,6 +10,12 @@ class Repository:
     self.conn = sqlite3.connect(db_path)
     self.cur = self.conn.cursor()
 
+  def get_service_list(self):
+    query = "SELECT name FROM service"
+    self.cur.execute(query)
+    rows = self.cur.fetchall()
+    return tuple(zip(*rows))[0] if rows else ()
+
   def save_status(self, service_data):
     query = "INSERT INTO service_log (name, load, status, substate, unix_created, unix_last_active) VALUES (?, ?, ?, ?, ?, ?)"
     self.cur.execute(query, (
@@ -42,5 +48,6 @@ class Repository:
   
 if __name__ == "__main__":
   ServiceRepository = Repository()
-  result = ServiceRepository.get_history_minimum(service_name="webconsole")
+  # result = ServiceRepository.get_history_minimum(service_name="webconsole")
+  result = ServiceRepository.get_service_list()
   print(result)

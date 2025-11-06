@@ -21,7 +21,6 @@ class ServiceStatusService:
     if len(last) > 0:
       dt = datetime.strptime(last, "%a %Y-%m-%d %H:%M:%S %Z")
       unix_time = int(dt.timestamp())
-      print(service_name, last, unix_time )
       
     return {"service": service_name, "load": load, "state": state, "substate": sub, "last_active": last, "last_active_unix": unix_time}
   
@@ -35,6 +34,4 @@ if __name__ == "__main__":
     service_name = "crond"  # example
     historyService = ServiceStatusService()
     result = historyService.check_service_status(service_name)
-    print(f"Service: {result['service']}")
-    print(f"Status: {result['status']}")
-    print(f"Last active: {result['last_active']}")
+    print(result)
