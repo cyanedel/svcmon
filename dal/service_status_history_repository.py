@@ -11,27 +11,29 @@ class Repository:
     self.cur = self.conn.cursor()
 
   def save_status(self, service_data):
-    query = "INSERT INTO service_log (name, status, datetime, datetime_lastactive) VALUES (?, ?, ?, ?)"
+    query = "INSERT INTO service_log (name, load, status, substate, unix_created, unix_last_active) VALUES (?, ?, ?, ?, ?, ?)"
     self.cur.execute(query, (
       service_data.get("service")
+      , service_data.get("load")
       , service_data.get("state")
-      , time.time()
-      , service_data.get("last")
+      , service_data.get("substate")
+      , int(time.time())
+      , service_data.get("last_active_unix")
     ))
     self.conn.commit()
 
   def get_history_by_limit(self, service_name, limit):
-    query = "SELECT name, status, datetime FROM service_log WHERE name=? LIMIT ?"
+    query = "SELECT name, status, unix_created FROM service_log WHERE name=? LIMIT ?"
     self.cur.execute(query, (service_name, limit))
     return self.cur.fetchall()
 
   def get_history_minimum(self, service_name):
-    query = "SELECT name, status, datetime" \
-    ", strftime('%Y', datetime, 'unixepoch') AS year" \
-    ", strftime('%m', datetime, 'unixepoch') AS month" \
-    ", strftime('%d', datetime, 'unixepoch') AS day" \
-    ", strftime('%H', datetime, 'unixepoch') AS hour" \
-    " FROM service_log WHERE name=? AND datetime >= strftime('%s', 'now', '-3 days')"
+    query = "SELECT name, load, status, substate, unix_created" \
+      ", strftime('%Y', unix_created, 'unixepoch') AS year" \
+      ", strftime('%m', unix_created, 'unixepoch') AS month" \
+      ", strftime('%d', unix_created, 'unixepoch') AS day" \
+      ", strftime('%H', unix_created, 'unixepoch') AS hour" \
+      " FROM service_log WHERE name=? AND unix_created >= strftime('%s', 'now', '-3 days')"
     self.cur.execute(query, (service_name,))
     return self.cur.fetchall()
 

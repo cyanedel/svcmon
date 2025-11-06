@@ -4,6 +4,7 @@ from dal.service_status_history_repository import Repository as ServiceStatusRep
 if __name__ == "__main__":
   services = ("safepc", "webconsole", "secuprint", "mariadb")
   serviceDAO = ServiceStatusRepository()
-  for item in services:
-    result = ServiceStatusService.get_service_status(item)
+  serviceStsService = ServiceStatusService()
+  for service in services:
+    result = serviceStsService.check_service_status(service)
     serviceDAO.save_status(result)
