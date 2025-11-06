@@ -1,0 +1,8 @@
+[Unit]
+Description=SafePC Scheduled Monitoring Service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python /root/servicemonitor/schedule.py
+WorkingDirectory=/root/servicemonitor
+User=root

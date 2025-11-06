@@ -1,0 +1,36 @@
+table.servicestatus{
+  max-width: fit-content;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+table.servicestatus td{
+  border: 1px solid #efefef;
+  padding: 0;
+  font-size: 12px;
+  overflow: hidden;
+}
+
+table.servicestatus tr td:first-child{
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+table.servicestatus tr td:nth-child(n+2){
+  height: 24px;
+  text-align: center;
+  width: 24px;
+}
+
+table.servicestatus td.dn{
+  background-color: red;
+}
+
+table.servicestatus td.up{
+  background-color: green;
+}
+
+table.servicestatus td.na::after{
+  content: 'x';
+  background-color: none;
+}

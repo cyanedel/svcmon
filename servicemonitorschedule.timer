@@ -1,0 +1,10 @@
+[Unit]
+Description=SafePC Scheduled Monitoring Service Timer
+
+[Timer]
+OnCalendar=*-*-* *:00:00
+Persistent=true
+Unit=servicemonitorschedule.service
+
+[Install]
+WantedBy=timers.target
