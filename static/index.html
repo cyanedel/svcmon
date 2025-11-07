@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <link rel="stylesheet" href="/pico.amber.min.css" />
   <link rel="stylesheet" href="/custom.css" />
   <script>
-    document.addEventListener('DOMContentLoaded', async () => {
+    document.addEventListener('DOMContentLoaded', () => {
       const hours = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"];
-      const servicelist = [];
 
       /**
        * @param {logdata} hourly log data.
        * @returns {string<td>} table row with service status class.
        */ 
-      const generate_logrow = (logdata) => {
+      const generate_service_logrow = (logdata) => {
         let result = "<tr><td>"+logdata[0][5].substring(2)+"."+logdata[0][6]+"."+logdata[0][7]+"</td>";
         hours.forEach(hstr => {
           const log = logdata.find(row => row[8] === hstr);
@@ -34,46 +34,88 @@
       }
 
       /**
+       * @param {logdata} hourly log data.
+       * @returns {string<td>} table row with port status class.
+       */ 
+      const generate_port_logrow = (logdata) => {
+        let result = "<tr><td>"+logdata[0][3].substring(2)+"."+logdata[0][4]+"."+logdata[0][5]+"</td>";
+        hours.forEach(hstr => {
+          const log = logdata.find(row => row[6] === hstr);
+          let sts = "na";
+          if (log) {
+            sts = log[1] === 1 ? "up" : "dn";
+          }
+          result += `<td class=${sts}></td>`;
+        });
+        return result+"</tr>";
+      }
+
+      /**
        * @param {service_name, logrow_array}
        * @returns {void}
        */ 
       const generate_append_logtable = (service_name, logrow_array) => {
-        const template = document.getElementById("service-status-history-template");
+        const template = document.getElementById("status-log-template");
         const clone = template.cloneNode(true);
 
-        clone.querySelector("p").textContent = service_name;
+        clone.querySelector("h4").textContent = service_name;
         const tbody = clone.querySelector("tbody");
         logrow_array.forEach(logrow => {
           tbody.insertAdjacentHTML("beforeend", logrow);
         });
         
         const cloneChild = Array.from(clone.children).map(child => child.cloneNode(true));
-        const target = document.getElementById("service-status-history");
+        const target = document.getElementById("service-status-log");
         cloneChild.forEach(el => target.appendChild(el));
       }
 
-      await fetch('/api/service/list')
+      fetch('/api/service/list')
         .then( res => { return res.json(); })
-        .then( data => { servicelist.push(...data) });
+        .then( servicelist => {
+          servicelist.forEach(async svcName => {
+            await fetch(`/api/service/history?service_name=${svcName}`)
+              .then( res => { return res.json(); })
+              .then( data => {
+                const days = [...new Set(data.map(row => row[7]))];
+                let logrow_array = [];
+                days.forEach(day => {
+                  const daylogs = data.filter(item => item[7] == day);
+                  const hourlogs = daylogs.filter((row, index, self) =>
+                    index === self.findIndex(r => r[8] === row[8])
+                  );
+                  const logrow = generate_service_logrow(hourlogs)
+                  logrow_array.push(logrow)
+                });
 
-      servicelist.forEach(async svcName => {
-        await fetch(`/api/service/history?service_name=${svcName}`)
-          .then( res => { return res.json(); })
-          .then( data => {
-            const days = [...new Set(data.map(row => row[7]))];
-            let logrow_array = [];
-            days.forEach(day => {
-              const daylogs = data.filter(item => item[7] == day);
-              const hourlogs = daylogs.filter((row, index, self) =>
-                index === self.findIndex(r => r[8] === row[8])
-              );
-              const logrow = generate_logrow(hourlogs)
-              logrow_array.push(logrow)
+                generate_append_logtable(svcName, logrow_array);
+              })
             });
-
-            generate_append_logtable(svcName, logrow_array);
-          })
         });
+      
+      fetch('/api/port/list')
+        .then( res => { return res.json(); })
+        .then( async portlist => { 
+          await portlist.forEach( portNo =>{
+            fetch(`/api/port/history?port_number=${portNo}`)
+              .then( res => { return res.json(); })
+              .then( data => {
+                const days = [...new Set(data.map(row => row[5]))];
+                let logrow_array = [];
+                days.forEach(day => {
+                  const daylogs = data.filter(item => item[5] == day);
+                  const hourlogs = daylogs.filter((row, index, self) =>
+                    index === self.findIndex(r => r[6] === row[6])
+                  );
+                  const logrow = generate_port_logrow(hourlogs)
+                  logrow_array.push(logrow)
+                });
+
+                // console.log(logrow_array)
+
+                generate_append_logtable("Port: "+portNo, logrow_array);
+              })
+          })
+         });
     })
   </script>
 </head>
@@ -82,15 +124,17 @@
     <h1>SvcMon</h1>
     <p>A service that monitors other services.</p>
     <hr />
-    <div id="service-status-history-template" class="d-none">
-      <p></p>
-      <table class="servicestatus">
-        <tbody>
-          <tr><td>date</td><td>00</td><td>01</td><td>02</td><td>03</td><td>04</td><td>05</td><td>06</td><td>07</td><td>08</td><td>09</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td><td>20</td><td>21</td><td>22</td><td>23</td></tr>
-        </tbody>
-      </table>
+    <div id="status-log-template" class="d-none">
+      <div class="status-log-wrapper">
+        <h4></h4>
+        <table class="status-log mb">
+          <tbody>
+            <tr><td>date</td><td>00</td><td>01</td><td>02</td><td>03</td><td>04</td><td>05</td><td>06</td><td>07</td><td>08</td><td>09</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td><td>20</td><td>21</td><td>22</td><td>23</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-    <div id="service-status-history" class="overflow-auto"></div>
+    <div id="service-status-log" class="overflow-auto"></div>
   </main>
 </body>
 </html>

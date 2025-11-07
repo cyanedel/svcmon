@@ -9,15 +9,6 @@ class APIGetRouter:
     self.PortStatusController = PortStatusController()
 
   def get_handler(self, subpath, params):
-    # parts = [p for p in subpath.split("/") if p]
-    # if not parts:
-    #     self._json_response({"error": "Invalid API path"}, 404)
-    #     return
-
-    # print("subpath: "+subpath)
-    # print("params:")
-    # print(params)
-
     if subpath == "ping":
       return {"status": Response.MSG_200}
     
@@ -28,7 +19,7 @@ class APIGetRouter:
     elif subpath == "service/check":
       service_name = params.get("service_name", [None])[0]
       if service_name is not None:
-        result = self.ServiceStatusController.check_service(service_name)
+        result = self.ServiceStatusController.test_check_service_single(service_name)
         return result
       else:
         raise HTTPError(400, Response.MSG_400)
@@ -40,6 +31,10 @@ class APIGetRouter:
         return result
       else:
         raise HTTPError(400, Response.MSG_400)
+    
+    elif subpath == "port/list":
+      result = self.PortStatusController.get_port_list()
+      return result
     
     elif subpath == "port/check":
       port_no = params.get("port_number", [None])[0]

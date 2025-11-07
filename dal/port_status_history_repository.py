@@ -16,7 +16,7 @@ class Repository:
     return tuple(zip(*rows))[0] if rows else ()
 
   def save_port_status(self, port_data):
-    self.cur.execute("INSERT INTO port_log (port, status, datetime) VALUES (?, ?, ?)", (port_data.get("port"), port_data.get("state"), int(time.time())))
+    self.cur.execute("INSERT INTO port_log (port, state, unix_created) VALUES (?, ?, ?)", (port_data.get("port"), port_data.get("state"), int(time.time())))
     self.conn.commit()
 
   def get_history_minimum(self, port_no):

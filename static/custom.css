@@ -1,54 +1,63 @@
-table.servicestatus{
+table.status-log{
   max-width: fit-content;
   user-select: none;
   -webkit-user-drag: none;
+  margin-bottom: 16px;
 }
 
-table.servicestatus td{
+table.status-log td{
   border: 1px solid #efefef;
   padding: 0;
-  font-size: 12px;
+  font-size: 11px;
   overflow: hidden;
 }
 
-table.servicestatus tr td:first-child{
+table.status-log tr td:first-child{
   padding-left: 8px;
   padding-right: 8px;
 }
 
-table.servicestatus tr td:nth-child(n+2){
-  height: 24px;
+table.status-log tr td:nth-child(n+2){
+  height: 18px;
   text-align: center;
-  min-width: 24px;
+  min-width: 18px;
 }
 
-table.servicestatus td.dn{
+table.status-log td.dn{
   background-color: red;
 }
 
-table.servicestatus td.up{
+table.status-log td.up{
   background-color: green;
 }
 
-table.servicestatus td.na::after{
+table.status-log td.na::after{
   content: 'x';
   background-color: none;
 }
 
-.d-none {
-  display: none;
+.status-log-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-@media (max-width: 575px) {
-  table.servicestatus tr td:nth-child(n+2):nth-child(-n+9),
-  table.servicestatus tr td:nth-child(n+20){
+[id$="-template"] { display: none; }
+
+@media (max-width: 767px) {
+  table.status-log tr td:nth-child(n+2):nth-child(-n+7),
+  table.status-log tr td:nth-child(n+22){
     display: none;
   }
 }
 
-@media (max-width: 767px) {
-  table.servicestatus tr td:nth-child(n+2):nth-child(-n+7),
-  table.servicestatus tr td:nth-child(n+22){
-    display: none;
+@media (min-width: 768px) {
+  table.status-log td{
+    font-size: 12px;
+  }
+
+  table.status-log tr td:nth-child(n+2){
+    height: 24px;
+    min-width: 24px;
   }
 }
