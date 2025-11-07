@@ -30,9 +30,12 @@ class PortStatusService:
       result.append((port, False))
 
     return result
+  
+  def save_port_status(self, data):
+    return self.PortStatusDAO.save_port_status(data)
 
 if __name__ == "__main__":
     statusService = PortStatusService()
-    ports = [8080, 5566, 5436, 9091, 3400, 3306]
+    ports = statusService.get_port_list()
     result = statusService.check_port_status(ports)
     print(result)

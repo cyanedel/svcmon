@@ -15,13 +15,13 @@ class Repository:
     rows = self.cur.fetchall()
     return tuple(zip(*rows))[0] if rows else ()
 
-  def save_status(self, port_data):
-    self.cur.execute("INSERT INTO port_log (port, status, datetime) VALUES (?, ?, ?, ?)", (port_data.get("port"), port_data.get("state"), time.time()))
+  def save_port_status(self, port_data):
+    self.cur.execute("INSERT INTO port_log (port, status, datetime) VALUES (?, ?, ?)", (port_data.get("port"), port_data.get("state"), int(time.time())))
     self.conn.commit()
 
-  def select_users(self, service_name, limit):
-    self.cur.execute("SELECT name, status, datetime FROM port_log WHERE name=? LIMIT ?", (service_name, limit))
-    return self.cur.fetchall()
+  # def select_users(self, service_name, limit):
+  #   self.cur.execute("SELECT name, status, datetime FROM port_log WHERE name=? LIMIT ?", (service_name, limit))
+  #   return self.cur.fetchall()
 
   def close(self):
     self.conn.close()
