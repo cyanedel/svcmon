@@ -9,7 +9,7 @@ class ServiceStatusController:
 
   def check_service(self, service_name):
     result = self.ServiceStatusService.check_service_status(service_name)
-    self.ServiceStatusService.save_status(result)
+    self.ServiceStatusService.save_service_status(result)
     return result
   
   def get_history_minimum(self, service_name):

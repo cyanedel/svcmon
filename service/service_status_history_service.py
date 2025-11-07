@@ -27,8 +27,8 @@ class ServiceStatusService:
       
     return {"service": service_name, "load": load, "state": state, "substate": sub, "last_active": last, "last_active_unix": unix_time}
   
-  def save_status(self, result):
-    self.serviceStatusDAO.save_status(result)
+  def save_service_status(self, data):
+    self.serviceStatusDAO.save_service_status(data)
   
   def get_history_minimum(self, service_name):
     return self.serviceStatusDAO.get_history_minimum(service_name)

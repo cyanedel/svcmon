@@ -15,7 +15,7 @@ class Repository:
     rows = self.cur.fetchall()
     return tuple(zip(*rows))[0] if rows else ()
 
-  def save_status(self, service_data):
+  def save_service_status(self, service_data):
     query = "INSERT INTO service_log (name, load, status, substate, unix_created, unix_last_active) VALUES (?, ?, ?, ?, ?, ?)"
     self.cur.execute(query, (
       service_data.get("service")

@@ -11,6 +11,6 @@ if __name__ == "__main__":
   for service in services:
     result = serviceStsService.check_service_status(service)
     serviceCheckResult.append(result)
-    serviceDAO.save_status(result)
+    serviceDAO.save_service_status(result)
 
   print(serviceCheckResult)
