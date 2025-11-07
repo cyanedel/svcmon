@@ -7,18 +7,14 @@ class PortStatusController:
   def get_port_list(self):
     return self.PortStatusService.get_port_list()
   
-  def check_port(self, port_no):
-    result = self.PortStatusService.check_port_status(port_no)
+  def test_check_port_multiple(self):
+    port_list = self.get_port_list()
+    result = self.PortStatusService.subprocess_check_port_multiple(port_list)
     return result
   
-  def check_port_list(self):
-    port_list = self.get_port_list()
-    result = self.PortStatusService.check_port_list_status(port_list)
-    for item in result:
-      data = {"port": item[0], "state": item[1]}
-      print(data)
-      self.save_port_status(data)
+  def test_check_port_single(self, port_no):
+    result = self.PortStatusService.subprocess_check_port_single(port_no)
     return result
-
-  def save_port_status(self, data):
-    return self.PortStatusService.save_port_status(data)
+  
+  def perform_check_port_multiple(self):
+    self.PortStatusService.check_port_multiple()

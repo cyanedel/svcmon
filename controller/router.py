@@ -44,11 +44,11 @@ class APIGetRouter:
     elif subpath == "port/check":
       port_no = params.get("port_number", [None])[0]
       if port_no is not None:
-        result = self.PortStatusController.check_port(port_no)
+        result = self.PortStatusController.test_check_port_single(port_no)
         return result
       else:    
         raise HTTPError(400, Response.MSG_400)
     
     elif subpath == "port-list/check":
-      result = self.PortStatusController.check_port_list()
+      result = self.PortStatusController.perform_check_port_multiple()
       return result
