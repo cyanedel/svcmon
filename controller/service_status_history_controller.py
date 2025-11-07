@@ -3,6 +3,9 @@ from service.service_status_history_service import ServiceStatusService
 class ServiceController:
   def __init__(self):
     self.ServiceStatusService = ServiceStatusService()
+  
+  def get_service_list(self):
+    return self.ServiceStatusService.get_service_list()
 
   def check_service(self, service_name):
     result = self.ServiceStatusService.check_service_status(service_name)

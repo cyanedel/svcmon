@@ -1,5 +1,6 @@
 from controller.service_status_history_controller import ServiceController
 from service.response_service import ResponseService as Response
+from controller.error_controller import HTTPError
 
 class APIGetRouter:
   def __init__(self):
@@ -16,21 +17,25 @@ class APIGetRouter:
     # print(params)
 
     if subpath == "ping":
-      return {"status": Response.MSG_200, "status_code": Response.CODE_200}
+      return {"status": Response.MSG_200}
+    
+    elif subpath == "service/list":
+      result = self.ServiceController.get_service_list()
+      return result
     
     elif subpath == "service/check":
       service_name = params.get("service_name", [None])[0]
       if service_name is not None:
         result = self.ServiceController.check_service(service_name)
-        return {"status": Response.MSG_200, "status_code": Response.CODE_200, "data": result}
+        return result
       else:
-        return {"status": Response.MSG_403, "status_code": Response.CODE_403}
+        raise HTTPError(400, Response.MSG_400)
       
     elif subpath == "service/history":
       service_name = params.get("service_name", [None])[0]
       if service_name is not None:
         result = self.ServiceController.get_history_minimum(service_name)
         print(result)
-        return {"status": Response.MSG_200, "status_code": Response.CODE_200, "data": result}
+        return result
       else:
-        return {"status": Response.MSG_403, "status_code": Response.CODE_403}
+        raise HTTPError(400, Response.MSG_400)

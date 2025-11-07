@@ -3,6 +3,7 @@ from urllib.parse import urlparse, parse_qs
 import os
 import json
 from controller.router import APIGetRouter
+from controller.error_controller import HTTPError
 
 STATIC_DIR = "static"
 
@@ -19,9 +20,17 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
 
     if path.startswith("/api/"):
       if self.command == "GET":
-        APIGet = APIGetRouter()
-        response = APIGet.get_handler(path[len("/api/"):], params)
-        self._json_response(response)
+        try:
+          APIGet = APIGetRouter()
+          response = APIGet.get_handler(path[len("/api/"):], params)
+          self._json_response(response)
+        
+        except HTTPError as e:
+          self._json_response(e.message, e.status_code)
+           
+        except Exception as e:
+          self._json_response(response, 500)
+
         return
 
     if parsed.path == "/":

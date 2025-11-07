@@ -1,7 +1,6 @@
 import os
 import sqlite3
 import time
-from datetime import datetime
 
 class Repository:
   def __init__(self, db_name="data.db"):
@@ -35,10 +34,10 @@ class Repository:
 
   def get_history_minimum(self, service_name):
     query = "SELECT name, load, status, substate, unix_created" \
-      ", strftime('%Y', unix_created, 'unixepoch') AS year" \
-      ", strftime('%m', unix_created, 'unixepoch') AS month" \
-      ", strftime('%d', unix_created, 'unixepoch') AS day" \
-      ", strftime('%H', unix_created, 'unixepoch') AS hour" \
+      ", strftime('%Y', unix_created, 'unixepoch', 'localtime') AS year" \
+      ", strftime('%m', unix_created, 'unixepoch', 'localtime') AS month" \
+      ", strftime('%d', unix_created, 'unixepoch', 'localtime') AS day" \
+      ", strftime('%H', unix_created, 'unixepoch', 'localtime') AS hour" \
       " FROM service_log WHERE name=? AND unix_created >= strftime('%s', 'now', '-3 days')"
     self.cur.execute(query, (service_name,))
     return self.cur.fetchall()
@@ -48,6 +47,6 @@ class Repository:
   
 if __name__ == "__main__":
   ServiceRepository = Repository()
-  # result = ServiceRepository.get_history_minimum(service_name="webconsole")
-  result = ServiceRepository.get_service_list()
+  result = ServiceRepository.get_history_minimum(service_name="webconsole")
+  # result = ServiceRepository.get_service_list()
   print(result)

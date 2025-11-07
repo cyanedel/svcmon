@@ -34,3 +34,7 @@ table.servicestatus td.na::after{
   content: 'x';
   background-color: none;
 }
+
+.d-none {
+  display: none;
+}
