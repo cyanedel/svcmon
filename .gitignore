@@ -208,7 +208,7 @@ __marimo__/
 
 # Custom
 DB.Browser/
-*.db
+dal/data.db
 *.zip
 static/pico-main/
 note.txt
