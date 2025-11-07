@@ -51,14 +51,14 @@
       }
 
       /**
-       * @param {service_name, logrow_array}
+       * @param {title, logrow_array}
        * @returns {void}
        */ 
-      const generate_append_logtable = (service_name, logrow_array) => {
+      const generate_append_logtable = (title, logrow_array, target_id) => {
         const template = document.getElementById("status-log-template");
         const clone = template.cloneNode(true);
 
-        clone.querySelector("h4").textContent = service_name;
+        clone.querySelector("h4").textContent = title;
         const tbody = clone.querySelector("tbody");
         logrow_array.forEach(logrow => {
           tbody.insertAdjacentHTML("beforeend", logrow);
@@ -87,7 +87,7 @@
                   logrow_array.push(logrow)
                 });
 
-                generate_append_logtable(svcName, logrow_array);
+                generate_append_logtable(svcName, logrow_array, "service-status-log");
               })
             });
         });
@@ -110,9 +110,7 @@
                   logrow_array.push(logrow)
                 });
 
-                // console.log(logrow_array)
-
-                generate_append_logtable("Port: "+portNo, logrow_array);
+                generate_append_logtable("Port: "+portNo, logrow_array, "port-status-log");
               })
           })
          });
@@ -135,6 +133,7 @@
       </div>
     </div>
     <div id="service-status-log" class="overflow-auto"></div>
+    <div id="port-status-log" class="overflow-auto"></div>
   </main>
 </body>
 </html>
