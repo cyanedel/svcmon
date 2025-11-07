@@ -19,7 +19,7 @@ table.servicestatus tr td:first-child{
 table.servicestatus tr td:nth-child(n+2){
   height: 24px;
   text-align: center;
-  width: 24px;
+  min-width: 24px;
 }
 
 table.servicestatus td.dn{
@@ -37,4 +37,18 @@ table.servicestatus td.na::after{
 
 .d-none {
   display: none;
+}
+
+@media (max-width: 575px) {
+  table.servicestatus tr td:nth-child(n+2):nth-child(-n+9),
+  table.servicestatus tr td:nth-child(n+20){
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  table.servicestatus tr td:nth-child(n+2):nth-child(-n+7),
+  table.servicestatus tr td:nth-child(n+22){
+    display: none;
+  }
 }
