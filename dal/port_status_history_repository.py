@@ -9,6 +9,12 @@ class Repository:
     self.conn = sqlite3.connect(db_path)
     self.cur = self.conn.cursor()
 
+  def get_port_list(self):
+    query = "SELECT port FROM port WHERE enabled=?"
+    self.cur.execute(query, (1,))
+    rows = self.cur.fetchall()
+    return tuple(zip(*rows))[0] if rows else ()
+
   def save_status(self, port_data):
     self.cur.execute("INSERT INTO port_log (port, status, datetime) VALUES (?, ?, ?, ?)", (port_data.get("port"), port_data.get("state"), time.time()))
     self.conn.commit()
@@ -19,3 +25,8 @@ class Repository:
 
   def close(self):
     self.conn.close()
+
+if __name__ == "__main__":
+  PortRepository = Repository()
+  result = PortRepository.get_port_list()
+  print(result)

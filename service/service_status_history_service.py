@@ -34,7 +34,7 @@ class ServiceStatusService:
     return self.serviceStatusDAO.get_history_minimum(service_name)
 
 if __name__ == "__main__":
-    historyService = ServiceStatusService()
-    # result = historyService.check_service_status("mariadb")
-    result = historyService.get_history_minimum("webconsole")
+    statusService = ServiceStatusService()
+    # result = statusService.check_service_status("mariadb")
+    result = statusService.get_history_minimum("webconsole")
     print(result)

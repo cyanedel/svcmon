@@ -1,6 +1,6 @@
 from service.service_status_history_service import ServiceStatusService
 
-class ServiceController:
+class ServiceStatusController:
   def __init__(self):
     self.ServiceStatusService = ServiceStatusService()
   
@@ -16,6 +16,6 @@ class ServiceController:
     return self.ServiceStatusService.get_history_minimum(service_name)
   
 if __name__ == "__main__":
-  SvcControl = ServiceController()
+  SvcControl = ServiceStatusController()
   result = SvcControl.get_history_minimum("webconsole")
   print(result)

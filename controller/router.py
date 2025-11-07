@@ -1,10 +1,12 @@
-from controller.service_status_history_controller import ServiceController
+from controller.service_status_history_controller import ServiceStatusController
+from controller.port_status_history_controller import PortStatusController
 from service.response_service import ResponseService as Response
 from controller.error_controller import HTTPError
 
 class APIGetRouter:
   def __init__(self):
-    self.ServiceController = ServiceController()
+    self.ServiceStatusController = ServiceStatusController()
+    self.PortStatusController = PortStatusController()
 
   def get_handler(self, subpath, params):
     # parts = [p for p in subpath.split("/") if p]
@@ -20,13 +22,13 @@ class APIGetRouter:
       return {"status": Response.MSG_200}
     
     elif subpath == "service/list":
-      result = self.ServiceController.get_service_list()
+      result = self.ServiceStatusController.get_service_list()
       return result
     
     elif subpath == "service/check":
       service_name = params.get("service_name", [None])[0]
       if service_name is not None:
-        result = self.ServiceController.check_service(service_name)
+        result = self.ServiceStatusController.check_service(service_name)
         return result
       else:
         raise HTTPError(400, Response.MSG_400)
@@ -34,8 +36,19 @@ class APIGetRouter:
     elif subpath == "service/history":
       service_name = params.get("service_name", [None])[0]
       if service_name is not None:
-        result = self.ServiceController.get_history_minimum(service_name)
-        print(result)
+        result = self.ServiceStatusController.get_history_minimum(service_name)
         return result
       else:
         raise HTTPError(400, Response.MSG_400)
+    
+    elif subpath == "port/check":
+      port_no = params.get("port_number", [None])[0]
+      if port_no is not None:
+        result = self.PortStatusController.check_port(port_no)
+        return result
+      else:    
+        raise HTTPError(400, Response.MSG_400)
+    
+    elif subpath == "port-list/check":
+      result = self.PortStatusController.check_port_list()
+      return result
