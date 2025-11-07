@@ -50,5 +50,5 @@ class APIGetRouter:
         raise HTTPError(400, Response.MSG_400)
     
     elif subpath == "port-list/check":
-      result = self.PortStatusController.perform_check_port_multiple()
+      result = self.PortStatusController.test_check_port_multiple()
       return result

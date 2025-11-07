@@ -9,7 +9,7 @@ class ServiceStatusService:
   def get_service_list(self):
     return self.serviceStatusDAO.get_service_list()
   
-  def check_service_status(self, service_name):
+  def subprocess_check_service(self, service_name):
     props = ["LoadState", "ActiveState", "SubState", "ActiveEnterTimestamp"]
     cmd = ["systemctl", "show", service_name, "--property=" + ",".join(props)]
 
@@ -32,6 +32,20 @@ class ServiceStatusService:
   
   def get_history_minimum(self, service_name):
     return self.serviceStatusDAO.get_history_minimum(service_name)
+  
+  def test_check_service_multiple(self):
+    service_list = self.get_service_list()
+    service_check_result = []
+    for service_name in service_list:
+      data = self.subprocess_check_service(service_name)
+      service_check_result.append(data)
+    return service_check_result
+
+  def check_service_multiple(self):
+    service_list = self.get_service_list()
+    for service_name in service_list:
+      data = self.subprocess_check_service(service_name)
+      self.save_service_status(data)
 
 if __name__ == "__main__":
     statusService = ServiceStatusService()
