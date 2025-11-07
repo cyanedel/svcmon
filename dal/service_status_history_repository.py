@@ -38,7 +38,9 @@ class Repository:
       ", strftime('%m', unix_created, 'unixepoch', 'localtime') AS month" \
       ", strftime('%d', unix_created, 'unixepoch', 'localtime') AS day" \
       ", strftime('%H', unix_created, 'unixepoch', 'localtime') AS hour" \
-      " FROM service_log WHERE name=? AND unix_created >= strftime('%s', 'now', '-3 days')"
+      " FROM service_log WHERE name=?" \
+      " AND unix_created >= strftime('%s', 'now', '-3 days')" \
+      " ORDER BY unix_created DESC"
     self.cur.execute(query, (service_name,))
     return self.cur.fetchall()
 

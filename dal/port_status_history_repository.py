@@ -19,9 +19,17 @@ class Repository:
     self.cur.execute("INSERT INTO port_log (port, status, datetime) VALUES (?, ?, ?)", (port_data.get("port"), port_data.get("state"), int(time.time())))
     self.conn.commit()
 
-  # def select_users(self, service_name, limit):
-  #   self.cur.execute("SELECT name, status, datetime FROM port_log WHERE name=? LIMIT ?", (service_name, limit))
-  #   return self.cur.fetchall()
+  def get_history_minimum(self, port_no):
+    query = "SELECT port, state, unix_created" \
+      ", strftime('%Y', unix_created, 'unixepoch', 'localtime') AS year" \
+      ", strftime('%m', unix_created, 'unixepoch', 'localtime') AS month" \
+      ", strftime('%d', unix_created, 'unixepoch', 'localtime') AS day" \
+      ", strftime('%H', unix_created, 'unixepoch', 'localtime') AS hour" \
+      " FROM port_log WHERE port=?" \
+      " AND unix_created >= strftime('%s', 'now', '-3 days')" \
+      " ORDER BY unix_created DESC"
+    self.cur.execute(query, (port_no,))
+    return self.cur.fetchall()
 
   def close(self):
     self.conn.close()

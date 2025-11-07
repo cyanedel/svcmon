@@ -18,3 +18,7 @@ class PortStatusController:
   
   def perform_check_port_multiple(self):
     self.PortStatusService.check_port_multiple()
+
+  def get_port_history(self, port_no):
+    result = self.PortStatusService.get_port_history(port_no)
+    return result

@@ -40,6 +40,10 @@ class PortStatusService:
     for item in result:
       data = {"port": item[0], "state": item[1]}
       self.save_port_status(data)
+  
+  def get_port_history(self, port_no):
+    result = self.PortStatusDAO.get_history_minimum(port_no)
+    return result
 
 if __name__ == "__main__":
     statusService = PortStatusService()

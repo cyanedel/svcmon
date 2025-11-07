@@ -11,10 +11,10 @@ class ServiceStatusController:
     result = self.ServiceStatusService.test_check_service_multiple()
     return result
   
-  def get_history_minimum(self, service_name):
-    return self.ServiceStatusService.get_history_minimum(service_name)
+  def get_service_history(self, service_name):
+    return self.ServiceStatusService.get_service_history(service_name)
   
 if __name__ == "__main__":
   SvcControl = ServiceStatusController()
-  result = SvcControl.get_history_minimum("webconsole")
+  result = SvcControl.get_service_history("webconsole")
   print(result)

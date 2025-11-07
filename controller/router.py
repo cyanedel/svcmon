@@ -36,7 +36,7 @@ class APIGetRouter:
     elif subpath == "service/history":
       service_name = params.get("service_name", [None])[0]
       if service_name is not None:
-        result = self.ServiceStatusController.get_history_minimum(service_name)
+        result = self.ServiceStatusController.get_service_history(service_name)
         return result
       else:
         raise HTTPError(400, Response.MSG_400)
@@ -51,4 +51,9 @@ class APIGetRouter:
     
     elif subpath == "port-list/check":
       result = self.PortStatusController.test_check_port_multiple()
+      return result
+    
+    elif subpath == "port/history":
+      port_number = params.get("port_number", [None])[0]
+      result = self.PortStatusController.get_port_history(port_number)
       return result

@@ -30,7 +30,7 @@ class ServiceStatusService:
   def save_service_status(self, data):
     self.serviceStatusDAO.save_service_status(data)
   
-  def get_history_minimum(self, service_name):
+  def get_service_history(self, service_name):
     return self.serviceStatusDAO.get_history_minimum(service_name)
   
   def test_check_service_multiple(self):
