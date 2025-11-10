@@ -31,5 +31,5 @@ With this monitoring software, I aim to collect simple statistics and automatica
 | `svcmon-check.timer` | Timer that executes svcmon-check.service every hour at 00 minutes |
 
 ### 3. Server Directoy
-Upload all files to `/root/svcmon/`.  
+Upload all files to `/opt/svcmon/`.  
 If you prefer a different directory, make sure to update the `ExecStart` path in the service and timer files accordingly.

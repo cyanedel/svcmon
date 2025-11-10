@@ -3,6 +3,6 @@ Description=SvcMon: Scheduled Service Checker
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/flock -n /var/lock/svcmon-check.lock /usr/bin/python /root/svcmon/schedule.py
-WorkingDirectory=/root/svcmon
+ExecStart=/usr/bin/flock -n /var/lock/svcmon-check.lock /usr/bin/python /opt/svcmon/schedule.py
+WorkingDirectory=/opt/svcmon
 User=root

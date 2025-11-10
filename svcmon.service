@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python /root/svcmon/server.py
-WorkingDirectory=/root/svcmon
+ExecStart=/usr/bin/python /opt/svcmon/server.py
+WorkingDirectory=/opt/svcmon
 Restart=always
 RestartSec=5
 User=root
