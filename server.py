@@ -11,6 +11,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
   def _set_headers(self, content_type="text/html", status=200):
     self.send_response(status)
     self.send_header("Content-Type", f"{content_type}; charset=utf-8")
+    self.send_header("Cache-Control", "public, max-age=2400")
     self.end_headers()
 
   def do_GET(self):

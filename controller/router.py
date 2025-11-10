@@ -16,6 +16,17 @@ class APIGetRouter:
       result = self.ServiceStatusController.get_service_list()
       return result
     
+    elif subpath == "service/restart":
+      service_name = params.get("service_name", [None])[0]
+      if service_name is not None:
+        result = self.ServiceStatusController.restart_service(service_name)
+        if result is True:
+          return {"status": Response.MSG_200}
+        else:
+          raise HTTPError(403, Response.MSG_403)
+      else:
+        raise HTTPError(400, Response.MSG_400)
+    
     elif subpath == "service/check":
       service_name = params.get("service_name", [None])[0]
       if service_name is not None:
@@ -52,3 +63,22 @@ class APIGetRouter:
       port_number = params.get("port_number", [None])[0]
       result = self.PortStatusController.get_port_history(port_number)
       return result
+    
+class APIPostRouter:
+  def __init__(self):
+    self.ServiceStatusController = ServiceStatusController()
+  
+  def post_handler(self, subpath, body):
+    if subpath == "ping":
+      return {"status": Response.MSG_200}
+    
+    # elif subpath == "service/restart":
+    #   service_name = params.get("service_name", [None])[0]
+    #   if service_name is not None:
+    #     result = self.ServiceStatusController.restart_service(service_name)
+    #     if result is True:
+    #       return {"status": Response.MSG_200}
+    #     else:
+    #       raise HTTPError(403, Response.MSG_403)
+    #   else:
+    #     raise HTTPError(400, Response.MSG_400)

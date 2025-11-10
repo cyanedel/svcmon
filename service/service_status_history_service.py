@@ -27,6 +27,15 @@ class ServiceStatusService:
       
     return {"service": service_name, "load": load, "state": state, "substate": sub, "last_active": last, "last_active_unix": unix_time}
   
+  def subprocess_restart_service(self, service_name):
+    services = self.get_service_list()
+    if service_name in services:
+      cmd = ["systemctl", "restart", service_name+".service"]
+      subprocess.run(cmd)
+      return True
+    else:
+      return False
+  
   def save_service_status(self, data):
     self.serviceStatusDAO.save_service_status(data)
   

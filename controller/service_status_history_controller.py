@@ -6,6 +6,9 @@ class ServiceStatusController:
   
   def get_service_list(self):
     return self.ServiceStatusService.get_service_list()
+  
+  def restart_service(self, service_name):
+    return self.ServiceStatusService.subprocess_restart_service(service_name)
 
   def test_check_service_single(self, service_name):
     result = self.ServiceStatusService.subprocess_check_service(service_name)
