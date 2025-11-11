@@ -1,5 +1,5 @@
 [Unit]
-Description=SvcMon: smon.service Timer
+Description=SvcMon: svcmon-check.service Timer
 
 [Timer]
 OnBootSec=5min
