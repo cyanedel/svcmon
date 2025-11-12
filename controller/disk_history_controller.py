@@ -7,6 +7,9 @@ class DiskStatusController:
   def get_fs_list(self):
     return self.DiskHistoryService.get_fs_list()
   
+  def get_disk_log(self, disk_name: str) -> list:
+    return self.DiskHistoryService.get_disk_log(disk_name)
+  
   def check_disk_space(self):
     self.DiskHistoryService.check_disk_space()
     return True

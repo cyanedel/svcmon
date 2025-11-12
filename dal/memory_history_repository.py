@@ -15,29 +15,18 @@ class Repository:
   def __exit__(self, exc_type, exc_value, traceback):
       self.conn.close()
 
-  def get_filesystem_list(self) -> tuple:
-    query = "SELECT filesystem FROM disk"
-    self.cur.execute(query)
-    rows = self.cur.fetchall()
-    return tuple(zip(*rows))[0] if rows else ()
-
-  def save_disk_space_data(self, data: dict) -> None:
-    self.cur.execute("INSERT INTO disk_log (filesystem, size, used, avail, unix_created) VALUES (?, ?, ?, ?, ?)", (data.get("filesystem"), data.get("size", 0), data.get("used", 0), data.get("available", 0), int(time.time())))
+  def save_memory_data(self, data: dict) -> None:
+    self.cur.execute("INSERT INTO memory_log (memory_type, total, used, free, available, unix_created) VALUES (?, ?, ?, ?, ?, ?)", (data.get("type"), data.get("total", 0), data.get("used", 0), data.get("free", 0), data.get("available", 0), int(time.time())))
     self.conn.commit()
 
-  def get_disk_log(self, disk_name):
-    query = "SELECT filesystem, size, used, avail, unix_created" \
+  def get_memory_log(self, memory_type):
+    query = "SELECT memory_type, total, used, free, available, unix_created" \
       ", strftime('%Y', unix_created, 'unixepoch', 'localtime') AS year" \
       ", strftime('%m', unix_created, 'unixepoch', 'localtime') AS month" \
       ", strftime('%d', unix_created, 'unixepoch', 'localtime') AS day" \
       ", strftime('%H', unix_created, 'unixepoch', 'localtime') AS hour" \
-      " FROM disk_log WHERE filesystem=?" \
+      " FROM memory_log WHERE memory_type=?" \
       " AND unix_created >= strftime('%s', 'now', '-3 days')" \
       " ORDER BY unix_created DESC"
-    self.cur.execute(query, (disk_name,))
+    self.cur.execute(query, (memory_type,))
     return self.cur.fetchall()
-
-if __name__ == "__main__":
-  DiskRepository = Repository()
-  result = DiskRepository.get_filesystem_list()
-  print(result)

@@ -5,11 +5,11 @@ class DiskHistoryService:
   def __init__(self):
     pass
 
-  def get_fs_list(self):
+  def get_fs_list(self) -> tuple:
     with Repository() as DiskHistoryDAO:
       return DiskHistoryDAO.get_filesystem_list()
 
-  def subprocess_check_disk_space(self):
+  def subprocess_check_disk_space(self) -> list[dict[str,str]]:
     result_df = subprocess.run(["df", "-k"], capture_output=True, text=True)
     lines = result_df.stdout.strip().split("\n")
 
@@ -23,12 +23,16 @@ class DiskHistoryService:
 
     return data_dict
   
-  def save_disk_space_data(self, disk_data):
+  def save_disk_space_data(self, data: dict) -> bool:
     with Repository() as DiskHistoryDAO:
-      DiskHistoryDAO.save_disk_space_data(disk_data)
+      DiskHistoryDAO.save_disk_space_data(data)
       return True
 
-  def check_disk_space(self):
-    disk_dict = self.subprocess_check_disk_space()
-    for disk_data in disk_dict:
-      self.save_disk_space_data(disk_data)
+  def check_disk_space(self) -> None:
+    disk_list = self.subprocess_check_disk_space()
+    for data in disk_list:
+      self.save_disk_space_data(data)
+  
+  def get_disk_log(self, disk_name: str) -> list:
+    with Repository() as DiskHistoryDAO:
+      return DiskHistoryDAO.get_disk_log(disk_name)
