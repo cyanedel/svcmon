@@ -9,6 +9,12 @@ class Repository:
     self.conn = sqlite3.connect(db_path)
     self.cur = self.conn.cursor()
 
+  def __enter__(self):
+      return self
+
+  def __exit__(self, exc_type, exc_value, traceback):
+      self.conn.close()
+
   def get_port_list(self):
     query = "SELECT port FROM port WHERE enabled=?"
     self.cur.execute(query, (1,))
@@ -30,9 +36,6 @@ class Repository:
       " ORDER BY unix_created DESC"
     self.cur.execute(query, (port_no,))
     return self.cur.fetchall()
-
-  def close(self):
-    self.conn.close()
 
 if __name__ == "__main__":
   PortRepository = Repository()

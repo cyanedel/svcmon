@@ -9,6 +9,12 @@ class Repository:
     self.conn = sqlite3.connect(db_path)
     self.cur = self.conn.cursor()
 
+  def __enter__(self):
+      return self
+
+  def __exit__(self, exc_type, exc_value, traceback):
+      self.conn.close()
+
   def get_service_list(self):
     query = "SELECT name FROM service"
     self.cur.execute(query)
@@ -43,9 +49,6 @@ class Repository:
       " ORDER BY unix_created DESC"
     self.cur.execute(query, (service_name,))
     return self.cur.fetchall()
-
-  def close(self):
-    self.conn.close()
   
 if __name__ == "__main__":
   ServiceRepository = Repository()

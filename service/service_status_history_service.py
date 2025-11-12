@@ -1,14 +1,15 @@
 import subprocess
 from datetime import datetime
-from dal.service_status_history_repository import Repository as ServiceStatusRepository
+from dal.service_status_history_repository import Repository
 
 class ServiceStatusService:
   def __init__(self):
-    self.serviceStatusDAO = ServiceStatusRepository()
+    pass
   
   def get_service_list(self):
-    return self.serviceStatusDAO.get_service_list()
-  
+    with Repository() as ServiceStatusDAO:
+      return ServiceStatusDAO.get_service_list()
+    
   def subprocess_check_service(self, service_name):
     props = ["LoadState", "ActiveState", "SubState", "ActiveEnterTimestamp"]
     cmd = ["systemctl", "show", service_name, "--property=" + ",".join(props)]
@@ -37,10 +38,12 @@ class ServiceStatusService:
       return False
   
   def save_service_status(self, data):
-    self.serviceStatusDAO.save_service_status(data)
+    with Repository() as ServiceStatusDAO:
+      ServiceStatusDAO.save_service_status(data)
   
   def get_service_history(self, service_name):
-    return self.serviceStatusDAO.get_history_minimum(service_name)
+    with Repository() as ServiceStatusDAO:
+      return ServiceStatusDAO.get_history_minimum(service_name)
   
   def test_check_service_multiple(self):
     service_list = self.get_service_list()
@@ -59,5 +62,5 @@ class ServiceStatusService:
 if __name__ == "__main__":
     statusService = ServiceStatusService()
     # result = statusService.check_service_status("mariadb")
-    result = statusService.get_history_minimum("webconsole")
+    result = statusService.get_service_history("webconsole")
     print(result)

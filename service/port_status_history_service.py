@@ -3,10 +3,11 @@ from dal.port_status_history_repository import Repository
 
 class PortStatusService:
   def __init__(self):
-    self.PortStatusDAO = Repository()
+    pass
   
   def get_port_list(self):
-    return self.PortStatusDAO.get_port_list()
+    with Repository() as PortStatusDAO:
+      return PortStatusDAO.get_port_list()
 
   def subprocess_check_port_multiple(self, ports):
     ss_result = subprocess.run(["ss", "-tulnp"], capture_output=True, text=True)
@@ -32,7 +33,8 @@ class PortStatusService:
     return result
   
   def save_port_status(self, data):
-    return self.PortStatusDAO.save_port_status(data)
+    with Repository() as PortStatusDAO:
+      return PortStatusDAO.save_port_status(data)
   
   def check_port_multiple(self):
     port_list = self.get_port_list()
@@ -42,8 +44,9 @@ class PortStatusService:
       self.save_port_status(data)
   
   def get_port_history(self, port_no):
-    result = self.PortStatusDAO.get_history_minimum(port_no)
-    return result
+    with Repository() as PortStatusDAO:
+      result = PortStatusDAO.get_history_minimum(port_no)
+      return result
 
 if __name__ == "__main__":
     statusService = PortStatusService()
