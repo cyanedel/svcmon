@@ -10,11 +10,11 @@ class PortStatusService:
       return PortStatusDAO.get_port_list()
 
   def subprocess_check_port_multiple(self, ports):
-    ss_result = subprocess.run(["ss", "-tulnp"], capture_output=True, text=True)
+    result_ss = subprocess.run(["ss", "-tulnp"], capture_output=True, text=True)
     result = []
 
     for port in ports:
-      if f":{port} " in ss_result.stdout:
+      if f":{port} " in result_ss.stdout:
         result.append((port, True))
       else:
         result.append((port, False))
@@ -22,10 +22,10 @@ class PortStatusService:
     return result
   
   def subprocess_check_port_single(self, port):
-    ss_result = subprocess.run(["ss", "-tulnp"], capture_output=True, text=True)
+    result_ss = subprocess.run(["ss", "-tulnp"], capture_output=True, text=True)
     result = []
 
-    if f":{port} " in ss_result.stdout:
+    if f":{port} " in result_ss.stdout:
       result.append((port, True))
     else:
       result.append((port, False))
@@ -34,7 +34,8 @@ class PortStatusService:
   
   def save_port_status(self, data):
     with Repository() as PortStatusDAO:
-      return PortStatusDAO.save_port_status(data)
+      PortStatusDAO.save_port_status(data)
+      return True
   
   def check_port_multiple(self):
     port_list = self.get_port_list()

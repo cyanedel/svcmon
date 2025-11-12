@@ -1,5 +1,6 @@
 from controller.service_status_history_controller import ServiceStatusController
 from controller.port_status_history_controller import PortStatusController
+from controller.disk_history_controller import DiskStatusController
 from service.response_service import ResponseService as Response
 from controller.error_controller import HTTPError
 
@@ -7,6 +8,7 @@ class APIGetRouter:
   def __init__(self):
     self.ServiceStatusController = ServiceStatusController()
     self.PortStatusController = PortStatusController()
+    self.DiskStatusController = DiskStatusController()
 
   def get_handler(self, subpath, params):
     if subpath == "ping":
@@ -63,6 +65,18 @@ class APIGetRouter:
       port_number = params.get("port_number", [None])[0]
       result = self.PortStatusController.get_port_history(port_number)
       return result
+    
+    elif subpath == "disk/list":
+      result = self.DiskStatusController.get_fs_list()
+      return result
+    
+    elif subpath == "disk/check":
+      result = self.DiskStatusController.test_check_disk_space()
+      return result
+    
+    # elif subpath == "disk/check-save":
+    #   self.DiskStatusController.check_disk_space()
+    #   return {"status": Response.MSG_200}
     
 class APIPostRouter:
   def __init__(self):
