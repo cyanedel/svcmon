@@ -12,10 +12,12 @@ class MemoryHistoryService:
     # headers = lines[0].split()
     headers = ["type", "total", "used", "free", "available"]
     mem_values = lines[1].split()
+    mem_values[0] = "memory"
     mem_info = dict(zip(headers, mem_values))
 
     if len(lines) > 2:
         swap_values = lines[2].split()
+        swap_values[0] = "swap"
         swap_info = dict(zip(headers, swap_values))
     else:
         swap_info = {}

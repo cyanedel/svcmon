@@ -1,39 +1,78 @@
+:root{
+  --sts-dn: #EE402E;
+  --sts-up: #00A66E;
+  --sts-na: #333C4E;
+  --status-div-width: 200px;
+}
+
+
 table.status-log{
-  max-width: fit-content;
-  user-select: none;
   -webkit-user-drag: none;
   margin-bottom: 16px;
+  max-width: fit-content;
+  user-select: none;
 }
 
 table.status-log td{
-  border: 1px solid #efefef;
-  padding: 0;
   font-size: 11px;
   overflow: hidden;
+  padding: 0;
 }
 
-table.status-log tr td:first-child{
+table.status-log tr:first-child td:first-child{
   padding-left: 8px;
   padding-right: 8px;
 }
 
-table.status-log tr td:nth-child(n+2){
+table.status-log tr td{
   height: 18px;
-  text-align: center;
   min-width: 18px;
+  text-align: center;
 }
 
-table.status-log td.dn{
-  background-color: red;
+table.status-log td{
+  padding: 1px;
 }
 
-table.status-log td.up{
-  background-color: green;
+table.status-log td.dn::after,
+table.status-log td.up::after,
+table.status-log td.na::after{
+  border-radius: 4px;
+  content: '';
+  display: block;
+  height: 100%;
+}
+
+table.status-log td.dn::after{
+  background-color: var(--sts-dn);
+}
+
+table.status-log td.up::after{
+  background-color: var(--sts-up);
 }
 
 table.status-log td.na::after{
-  content: 'x';
-  background-color: none;
+  background-color: var(--sts-na);
+}
+
+.text-center {
+  text-align: center;
+}
+
+#port-status-log,
+#service-status-log {
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1 1 auto;
+  margin: auto;
+  width: calc((var(--status-div-width) * 1) + (16px * 1))
+}
+
+#port-status-log > div,
+#service-status-log > div {
+  margin-left: 8px;
+  margin-right: 8px;
+  width: var(--status-div-width);
 }
 
 .status-log-wrapper {
@@ -42,22 +81,46 @@ table.status-log td.na::after{
   align-items: center;
 }
 
+.status-log-wrapper h5{
+  text-align: left;
+  margin-bottom: 0.5rem;
+}
+
 [id$="-template"] { display: none; }
 
-@media (max-width: 767px) {
-  table.status-log tr td:nth-child(n+2):nth-child(-n+7),
-  table.status-log tr td:nth-child(n+22){
-    display: none;
+@media (min-width: 576px) {
+  #port-status-log,
+  #service-status-log {
+    width: calc((var(--status-div-width) * 2) + (16px * 2));
   }
 }
 
 @media (min-width: 768px) {
-  table.status-log td{
-    font-size: 12px;
+  #port-status-log,
+  #service-status-log {
+    width: calc((var(--status-div-width) * 3) + (16px * 3));
   }
-
   table.status-log tr td:nth-child(n+2){
-    height: 24px;
-    min-width: 24px;
+    height: 20px;
+    min-width: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  #port-status-log,
+  #service-status-log {
+    width: calc((var(--status-div-width) * 4) + (16px * 4));
+  }
+}
+@media (min-width: 1280px) {
+  #port-status-log,
+  #service-status-log {
+    width: calc((var(--status-div-width) * 5) + (16px * 5));
+  }
+}
+@media (min-width: 1536px) {
+  #port-status-log,
+  #service-status-log {
+    width: calc((var(--status-div-width) * 6) + (16px * 6));
   }
 }

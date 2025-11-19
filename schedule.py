@@ -14,5 +14,5 @@ if __name__ == "__main__":
   ServiceStsService.check_service_multiple()
   PortStsService.check_port_multiple()
   MemoryService.check_memory()
-  if now.weekday() == 4 and now.hour() >= 23 and now.minute <= 5:
+  if now.weekday() == 4 and now.hour >= 23 and now.minute <= 5:
     DiskService.check_disk_space()

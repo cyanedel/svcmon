@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Service Monitor</title>
   <link rel="stylesheet" href="/pico.amber.min.css" />
   <link rel="stylesheet" href="/custom.css" />
   <script>
@@ -13,8 +14,9 @@
        * @returns {string<td>} table row with service status class.
        */ 
       const generate_service_logrow = (logdata) => {
-        let result = "<tr><td>"+logdata[0][5].substring(2)+"."+logdata[0][6]+"."+logdata[0][7]+"</td>";
-        hours.forEach(hstr => {
+        const splitCols = [8, 16]
+        let result = `<tr><td rowspan="${splitCols.length+1}">${logdata[0][5]}<br />${logdata[0][6]}.${+logdata[0][7]}</td>`;
+        hours.forEach((hstr, index) => {
           const log = logdata.find(row => row[8] === hstr);
           let sts = "na";
           if (log) {
@@ -29,6 +31,9 @@
             }
           }
           result += `<td class=${sts}></td>`;
+          if (splitCols.includes(index+1)){
+            result += '</tr><tr>';
+          }
         });
         return result+"</tr>";
       }
@@ -38,14 +43,18 @@
        * @returns {string<td>} table row with port status class.
        */ 
       const generate_port_logrow = (logdata) => {
-        let result = "<tr><td>"+logdata[0][3].substring(2)+"."+logdata[0][4]+"."+logdata[0][5]+"</td>";
-        hours.forEach(hstr => {
+        const splitCols = [8, 16]
+        let result = `<tr><td rowspan="${splitCols.length+1}">${logdata[0][3]}<br/>${logdata[0][4]}.${logdata[0][5]}</td>`;
+        hours.forEach((hstr, index) => {
           const log = logdata.find(row => row[6] === hstr);
           let sts = "na";
           if (log) {
             sts = log[1] === 1 ? "up" : "dn";
           }
           result += `<td class=${sts}></td>`;
+          if (splitCols.includes(index+1)){
+            result += '</tr><tr>';
+          }
         });
         return result+"</tr>";
       }
@@ -56,16 +65,16 @@
        */ 
       const generate_append_logtable = (title, logrow_array, target_id) => {
         const template = document.getElementById("status-log-template");
-        const clone = template.cloneNode(true);
+        const clone = template.content.cloneNode(true);
 
-        clone.querySelector("h4").textContent = title;
+        clone.querySelector("h5").textContent = title;
         const tbody = clone.querySelector("tbody");
         logrow_array.forEach(logrow => {
           tbody.insertAdjacentHTML("beforeend", logrow);
         });
         
         const cloneChild = Array.from(clone.children).map(child => child.cloneNode(true));
-        const target = document.getElementById("service-status-log");
+        const target = document.getElementById(target_id);
         cloneChild.forEach(el => target.appendChild(el));
       }
 
@@ -110,10 +119,10 @@
                   logrow_array.push(logrow)
                 });
 
-                generate_append_logtable("Port: "+portNo, logrow_array, "port-status-log");
+                generate_append_logtable(portNo, logrow_array, "port-status-log");
               })
           })
-         });
+        });
     })
   </script>
 </head>
@@ -122,18 +131,22 @@
     <h1>SvcMon</h1>
     <p>A service that monitors other services.</p>
     <hr />
-    <div id="status-log-template" class="d-none">
+    <h3 class="text-center">Services</h3>
+    <div id="service-status-log"></div>
+    <hr />
+    <h3 class="text-center">Ports</h3>
+    <div id="port-status-log"></div>
+
+    <template id="status-log-template" class="d-none">
       <div class="status-log-wrapper">
-        <h4></h4>
-        <table class="status-log mb">
-          <tbody>
-            <tr><td>date</td><td>00</td><td>01</td><td>02</td><td>03</td><td>04</td><td>05</td><td>06</td><td>07</td><td>08</td><td>09</td><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td><td>20</td><td>21</td><td>22</td><td>23</td></tr>
-          </tbody>
-        </table>
+        <h5></h5>
+        <table class="status-log mb"><tbody></tbody></table>
       </div>
-    </div>
-    <div id="service-status-log" class="overflow-auto"></div>
-    <div id="port-status-log" class="overflow-auto"></div>
+    </template>
   </main>
 </body>
+<hr />
+<footer class="text-center">
+  <a href="https://github.com/cyanedel/svcmon">GitHub</a>
+</footer>
 </html>
