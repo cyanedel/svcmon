@@ -78,11 +78,20 @@
         cloneChild.forEach(el => target.appendChild(el));
       }
 
+      const memoryLogMaker = (logdata) => {
+        usedLog = []
+        hours.forEach((hstr, index) => {
+          const log = logdata.find(row => row[9] === hstr);
+          usedLog.push(typeof log == 'undefined' ? 0 : log[2])
+        });
+        console.log(usedLog)
+      }
+
       fetch('/api/service/list')
         .then( res => { return res.json(); })
         .then( servicelist => {
-          servicelist.forEach(async svcName => {
-            await fetch(`/api/service/history?service_name=${svcName}`)
+          servicelist.forEach(svcName => {
+            fetch(`/api/service/history?service_name=${svcName}`)
               .then( res => { return res.json(); })
               .then( data => {
                 const days = [...new Set(data.map(row => row[7]))];
@@ -99,30 +108,51 @@
                 generate_append_logtable(svcName, logrow_array, "service-status-log");
               })
             });
-        });
+        })
+        .then( getPortLog() )
+        .then( getMemoryLog() );
       
-      fetch('/api/port/list')
-        .then( res => { return res.json(); })
-        .then( async portlist => { 
-          await portlist.forEach( portNo =>{
-            fetch(`/api/port/history?port_number=${portNo}`)
-              .then( res => { return res.json(); })
-              .then( data => {
-                const days = [...new Set(data.map(row => row[5]))];
-                let logrow_array = [];
-                days.forEach(day => {
-                  const daylogs = data.filter(item => item[5] == day);
-                  const hourlogs = daylogs.filter((row, index, self) =>
-                    index === self.findIndex(r => r[6] === row[6])
-                  );
-                  const logrow = generate_port_logrow(hourlogs)
-                  logrow_array.push(logrow)
-                });
+      function getPortLog(){
+        fetch('/api/port/list')
+          .then( res => { return res.json(); })
+          .then( portlist => { 
+            portlist.forEach( portNo =>{
+              fetch(`/api/port/history?port_number=${portNo}`)
+                .then( res => { return res.json(); })
+                .then( data => {
+                  const days = [...new Set(data.map(row => row[5]))];
+                  let logrow_array = [];
+                  days.forEach(day => {
+                    const daylogs = data.filter(item => item[5] == day);
+                    const hourlogs = daylogs.filter((row, index, self) =>
+                      index === self.findIndex(r => r[6] === row[6])
+                    );
+                    const logrow = generate_port_logrow(hourlogs)
+                    logrow_array.push(logrow)
+                  });
 
-                generate_append_logtable(portNo, logrow_array, "port-status-log");
-              })
-          })
+                  generate_append_logtable(portNo, logrow_array, "port-status-log");
+                })
+            })
+          });
+      }
+
+      async function getMemoryLog(){
+        const res = await fetch('/api/memory/history?memory_type=memory');
+        data = await res.json();
+        debugger;
+        const days = [...new Set(data.map(row => row[8]))];
+        days.forEach(day => {
+          const daylogs = data.filter(item => item[8] == day);
+          const hourlogs = daylogs.filter((row, index, self) =>
+            index === self.findIndex(r => r[9] === row[9])
+          );
+          console.log(`day: ${day}`)
+          memoryLogMaker(hourlogs)
+          // const logrow = generate_port_logrow(hourlogs)
+          // logrow_array.push(logrow)
         });
+      }
     })
   </script>
 </head>
