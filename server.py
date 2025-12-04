@@ -15,12 +15,12 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
     self.end_headers()
 
   def do_GET(self):
-    parsed = urlparse(self.path)
-    path = parsed.path
-    params = parse_qs(parsed.query)
-
-    if path.startswith("/api/"):
-      if self.command == "GET":
+    if self.command == "GET":
+      parsed = urlparse(self.path)
+      path = parsed.path
+      params = parse_qs(parsed.query)
+      
+      if path.startswith("/api/"):
         try:
           APIGet = APIGetRouter()
           response = APIGet.get_handler(path[len("/api/"):], params)
