@@ -1,5 +1,6 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
+import mimetypes
 import os
 import json
 from controller.router import APIGetRouter
@@ -15,34 +16,49 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
     self.end_headers()
 
   def do_GET(self):
-    parsed = urlparse(self.path)
-    path = parsed.path
-    params = parse_qs(parsed.query)
-
-    if path.startswith("/api/"):
-      if self.command == "GET":
+    if self.command == "GET":
+      parsed = urlparse(self.path)
+      path = parsed.path
+      params = parse_qs(parsed.query)
+      
+      if path.startswith("/api/"):
         try:
           APIGet = APIGetRouter()
           response = APIGet.get_handler(path[len("/api/"):], params)
           self._json_response(response)
-        
         except HTTPError as e:
           self._json_response(e.message, e.status_code)
-           
         except Exception as e:
           self._json_response(response, 500)
-
         return
+      
+      if path.startswith("/docs-user"):
+        if path.startswith("/docs-user/id"):
+          DOCS_DIR = os.path.join(STATIC_DIR, "docs-user", "id")
+          rel_path = self.path[len("/docs-user/id/"):]
+        elif path.startswith("/docs-user/ko"):
+          DOCS_DIR = os.path.join(STATIC_DIR, "docs-user", "ko")
+          rel_path = self.path[len("/docs-user/ko/"):]
+        else:
+          DOCS_DIR = os.path.join(STATIC_DIR, "docs-user")
+          rel_path = self.path[len("/docs-user/"):]
 
-    if parsed.path == "/":
-      self._serve_file("index.html")
-    else:
-      filepath = os.path.join(STATIC_DIR, parsed.path.lstrip("/"))
-      if os.path.isfile(filepath):
-          self._serve_file(parsed.path.lstrip("/"))
+        if rel_path == "" or rel_path == "/":
+          rel_path = "index.html"
+
+        file_path = os.path.join(DOCS_DIR, rel_path)
+
+        return self.serve_docusaurus(DOCS_DIR, rel_path, file_path)
+
+      if parsed.path == "/":
+        self.serve_file("index.html")
       else:
-          self._set_headers(status=404)
-          self.wfile.write(b"Not Found")
+        filepath = os.path.join(STATIC_DIR, parsed.path.lstrip("/"))
+        if os.path.isfile(filepath):
+            self.serve_file(parsed.path.lstrip("/"))
+        else:
+            self._set_headers(status=404)
+            self.wfile.write(b"Not Found")
           
   def do_POST(self):
     parsed = urlparse(self.path)
@@ -50,11 +66,11 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
     params = parse_qs(parsed.query)
 
     if path.startswith("/api/"):
-       if self.command == "POST":
+      if self.command == "POST":
         self.handle_api_post(path[len("/api/"):], params)
         return
        
-  def _serve_file(self, filename):
+  def serve_file(self, filename):
     filepath = os.path.join(STATIC_DIR, filename)
     if not os.path.exists(filepath):
         self._set_headers(status=404)
@@ -66,11 +82,31 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         ".html": "text/html",
         ".js": "application/javascript",
         ".css": "text/css",
+        ".md": "text/markdown",
     }.get(ext, "application/octet-stream")
 
     self._set_headers(mime)
     with open(filepath, "rb") as f:
         self.wfile.write(f.read())
+
+  def serve_docusaurus(self, DOCS_DIR, rel_path, file_path):
+    if not os.path.isfile(file_path):
+      if "." not in rel_path:  # looks like a SPA route
+        file_path = os.path.join(DOCS_DIR, "index.html")
+      else:
+        return self.send_error(404)
+
+    mime, _ = mimetypes.guess_type(file_path)
+    if mime is None:
+      mime = "application/octet-stream"
+
+    self.send_response(200)
+    self.send_header("Content-type", mime)
+    self.end_headers()
+
+    with open(file_path, "rb") as f:
+        self.wfile.write(f.read())
+    return
        
   def handle_api_post(self, subpath, params):
     # post method
